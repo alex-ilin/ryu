@@ -37,10 +37,10 @@ IN: ryu
     pow-5-factor <= ;
 
 : double-pow-5-bits ( n -- m )
-    dup 0 = [ drop 1 ] [
+    [ 1 ] [
         DOUBLE_LOG2_5_NUMERATOR * DOUBLE_LOG2_5_DENOMINATOR + 1 -
         DOUBLE_LOG2_5_DENOMINATOR /i
-    ] if ;
+    ] if-zero ;
 
 : decimal-length ( m -- n )
     {
