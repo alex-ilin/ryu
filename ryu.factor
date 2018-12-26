@@ -10,10 +10,10 @@ IN: ryu
 : mul-shift ( x mul shift -- y )
     [ first2 rot [ * ] keep swapd * -64 shift + ] [ 64 - neg ] bi* shift ;
 
-: mul-shift-all ( mmShift m mul shift -- vp vm vr )
+: mul-shift-all ( mmShift m mul shift -- vm vp vr )
     [ [ 4 * 1 - swap - ] 2dip mul-shift ]
     [ [ 4 * 2 +        ] 2dip mul-shift ]
-    [ [ 4 *            ] 2dip mul-shift ] 3tri swapd ;
+    [ [ 4 *            ] 2dip mul-shift ] 3tri ;
 
 : multiple-of-5? ( value -- ? )
     5 rem zero? ;
@@ -123,7 +123,7 @@ PRIVATE>
             q double-pow-5-bits DOUBLE_POW5_INV_BITCOUNT * 1 - :> k
             q k + e2 - :> i
             mmShift m2 q DOUBLE_POW5_INV_SPLIT nth i mul-shift-all
-            :> ( vp! vm! vr! )
+            :> ( vm! vp! vr! )
 
             debug? [
                 mv e2 q "%d * 2^%d / 10^%d\n" printf
@@ -148,7 +148,7 @@ PRIVATE>
             i double-pow-5-bits DOUBLE_POW5_BITCOUNT - :> k
             q k - :> j
             mmShift m2 i DOUBLE_POW5_SPLIT nth j mul-shift-all
-            :> ( vp! vm! vr! )
+            :> ( vm! vp! vr! )
 
             debug? [
                 mv e2 neg q "%d * 5^%d / 10^%d\n" printf
