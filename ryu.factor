@@ -33,8 +33,8 @@ IN: ryu
         ] if
     ] while result ;
 
-: multiple-of-power-of-5 ( value p -- ? )
-    [ pow-5-factor ] dip >= ;
+: multiple-of-power-of-5 ( p value -- ? )
+    pow-5-factor <= ;
 
 : double-pow-5-bits ( n -- m )
     dup 0 = [ drop 1 ] [
@@ -132,12 +132,12 @@ PRIVATE>
 
             q 21 <= [
                 mv 5 rem zero? [
-                    mv q multiple-of-power-of-5 :> vrIsTrailingZeros!
+                    q mv multiple-of-power-of-5 :> vrIsTrailingZeros!
                 ] [
                     acceptBounds [
-                        mv mmShift - 1 - q multiple-of-power-of-5 vmIsTrailingZeros!
+                        q mv mmShift - 1 - multiple-of-power-of-5 vmIsTrailingZeros!
                     ] [
-                        vp mv 2 + q multiple-of-power-of-5 - vp!
+                        q vp mv 2 + multiple-of-power-of-5 - vp!
                     ] if
                 ] if
             ] when
