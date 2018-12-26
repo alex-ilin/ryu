@@ -23,7 +23,7 @@ IN: ryu
     0 :> result!
     x :> value!
     f :> finished!
-    [ count value < finished not and ] [
+    [ count x <= finished not and ] [
         value multiple-of-5? [
             value 5 /i value!
             count 1 + count!
