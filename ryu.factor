@@ -77,20 +77,20 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
 
     debug? [ data "IN=%b\n" printf ] when
 
-    0 :> m2
-    0 :> e2
+    0 :> m2!
+    0 :> e2!
     exponentBits on-bits ieeeExponent = [
         ieeeMantissa zero? [ sign "-Inf" "Inf" ? ] [ "NaN" ] if
     ] [
         ieeeExponent zero? [
             ieeeMantissa zero? [ sign "-0.0" "0.0" ? ] [
-                1 offset - mantissaBits - 2 - :> e2
-                ieeeMantissa :> m2
+                1 offset - mantissaBits - 2 - e2!
+                ieeeMantissa m2!
                 f
             ] if
         ] [
-            ieeeExponent offset - mantissaBits - 2 - :> e2
-            ieeeMantissa mantissaBits set-bit :> m2
+            ieeeExponent offset - mantissaBits - 2 - e2!
+            ieeeMantissa mantissaBits set-bit m2!
             f
         ] if
     ] if
