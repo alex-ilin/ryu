@@ -243,7 +243,7 @@ PRIVATE>
         ] when
 
         0 :> index!
-        sign [ "-" 0 result set-nth 1 index! ] when
+        sign [ CHAR: - 0 result set-nth 1 index! ] when
         0 :> i!
         output :> output2!
         [ output2 10000 >= ] [
