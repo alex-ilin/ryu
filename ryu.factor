@@ -70,12 +70,13 @@ CONSTANT: exponentBits 11
 CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
 
 :: unpack-bits ( f debug? -- e2 m2 acceptBounds ieeeExponent<=1? neg? string/f )
-    f double>bits :> data
-    data 64 bit? :> sign
-    data mantissaBits bits :> ieeeMantissa
-    data mantissaBits neg shift exponentBits bits :> ieeeExponent
+    f double>bits
+    dup 64 bit? :> sign
+    dup mantissaBits bits :> ieeeMantissa
+    dup mantissaBits neg shift exponentBits bits :> ieeeExponent
 
-    debug? [ data "IN=%b\n" printf ] when
+    debug? [ dup "IN=%b\n" printf ] when
+    drop
 
     0 :> m2!
     0 :> e2!
