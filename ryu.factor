@@ -83,7 +83,7 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
         ieeeExponent [
             ieeeMantissa [ sign "-0.0" "0.0" ? ] [
                 m2!
-                1 offset - mantissaBits - 2 - e2!
+                -1 offset - mantissaBits - e2!
                 f
             ] if-zero
         ] [
