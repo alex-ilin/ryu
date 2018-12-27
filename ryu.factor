@@ -107,12 +107,7 @@ PRIVATE>
     ] [| e2 m2 acceptBounds ieeeExponent<=1 sign |
         m2 4 * :> mv
         mantissaBits 2^ m2 = not ieeeExponent<=1 or 1 0 ? :> mmShift
-        f :> vmIsTrailingZeros!
-        f :> vrIsTrailingZeros!
-        0 :> e10!
-        0 :> vr!
-        0 :> vp!
-        0 :> vm!
+        f f 0 0 0 0 :> ( vmIsTrailingZeros! vrIsTrailingZeros! e10! vr! vp! vm! )
 
         e2 0 >= [
             e2 DOUBLE_LOG10_2_NUMERATOR * DOUBLE_LOG10_2_DENOMINATOR /i 0 max :> q
@@ -175,9 +170,7 @@ PRIVATE>
 
         vp decimal-length :> vplength
         e10 vplength + 1 - :> exp!
-        0 :> removed!
-        0 :> lastRemovedDigit!
-        0 :> output!
+        0 0 0 :> ( removed! lastRemovedDigit! output! )
         vmIsTrailingZeros vrIsTrailingZeros or [
             ! rare
             [ vp 10 /i vm 10 /i > ] [
@@ -236,11 +229,8 @@ PRIVATE>
             exp "EXP=%d\n" printf
         ] when
 
-        25 <vector> :> result
-        0 :> index!
+        25 <vector> output 0 0 :> ( result output2! index! i! )
         sign [ CHAR: - 0 result set-nth 1 index! ] when
-        0 :> i!
-        output :> output2!
         [ output2 10000 >= ] [
             output2 output2 10000 /i 10000 * - :> c
             output2 10000 /i output2!
