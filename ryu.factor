@@ -68,13 +68,11 @@ CONSTANT: mantissaBits 52
 CONSTANT: exponentBits 11
 CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
 
-:: unpack-bits ( value debug? -- e2 m2 acceptBounds ieeeExponent<=1? neg? string/f )
+:: unpack-bits ( value -- e2 m2 acceptBounds ieeeExponent<=1? neg? string/f )
     value double>bits
-    debug? [ dup "IN=%b\n" printf ] when
     dup mantissaBits exponentBits + bit? :> sign
     dup mantissaBits bits :> ieeeMantissa
     mantissaBits neg shift exponentBits bits :> ieeeExponent
-
     0 :> m2!
     0 :> e2!
     exponentBits on-bits ieeeExponent = [
@@ -92,35 +90,23 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
             f
         ] if-zero
     ] if
-
-    debug? [ sign "-" "+" ? e2 2 + m2 "S=%s E=0x%x M=0x%x\n" printf ] when
     [ e2 m2 dup even? ieeeExponent 1 <= sign ] dip ;
-
-: bool>str ( ? -- string )
-    "true" "false" ? ;
 
 PRIVATE>
 
-:: print-float ( value debug? -- string )
-    value >float debug? unpack-bits [
+:: print-float ( value -- string )
+    value >float unpack-bits [
         [ 5drop ] dip
     ] [| e2 m2 acceptBounds ieeeExponent<=1 sign |
         m2 4 * :> mv
         mantissaBits 2^ m2 = not ieeeExponent<=1 or 1 0 ? :> mmShift
         f f 0 0 0 0 :> ( vmIsTrailingZeros! vrIsTrailingZeros! e10! vr! vp! vm! )
-
         e2 0 >= [
             e2 DOUBLE_LOG10_2_NUMERATOR * DOUBLE_LOG10_2_DENOMINATOR /i 0 max :> q
             q e10!
             q double-pow-5-bits DOUBLE_POW5_INV_BITCOUNT + 1 - :> k
             q k + e2 - :> i
             mmShift m2 q DOUBLE_POW5_INV_SPLIT nth i mul-shift-all vr! vp! vm!
-
-            debug? [
-                mv e2 q "%d * 2^%d / 10^%d\n" printf
-                vp vr vm "V+=%d\nV =%d\nV-=%d\n" printf
-            ] when
-
             q 21 <= [
                 mv 5 rem zero? [
                     q mv multiple-of-power-of-5 :> vrIsTrailingZeros!
@@ -139,13 +125,6 @@ PRIVATE>
             i double-pow-5-bits DOUBLE_POW5_BITCOUNT - :> k
             q k - :> j
             mmShift m2 i DOUBLE_POW5_SPLIT nth j mul-shift-all vr! vp! vm!
-
-            debug? [
-                mv e2 neg q "%d * 5^%d / 10^%d\n" printf
-                q i k j "%d %d %d %d\n" printf
-                vp vr vm "V+=%d\nV =%d\nV-=%d\n" printf
-            ] when
-
             q 1 <= [
                 mv 1 bitand bitnot q >= vrIsTrailingZeros!
                 acceptBounds [
@@ -154,20 +133,9 @@ PRIVATE>
             ] [
                 q 63 < [
                     q 1 - 2^ 1 - mv bitand zero? vrIsTrailingZeros!
-                    debug? [
-                        vrIsTrailingZeros bool>str "vr is trailing zeros=%s\n" printf
-                    ] when
                 ] when
             ] if
         ] if
-
-        debug? [
-            e10 "e10=%d\n" printf
-            vp vr vm "V+=%d\nV =%d\nV-=%d\n" printf
-            vrIsTrailingZeros bool>str "vr is trailing zeros=%s\n" printf
-            vmIsTrailingZeros bool>str "vm is trailing zeros=%s\n" printf
-        ] when
-
         vp decimal-length :> vplength
         e10 vplength + 1 - :> exp!
         0 0 0 :> ( removed! lastRemovedDigit! output! )
@@ -183,9 +151,6 @@ PRIVATE>
                 vm 10 /i vm!
                 removed 1 + removed!
             ] while
-
-            debug? [ vp vr vm "V+=%d\nV =%d\nV-=%d\n" printf ] when
-
             vmIsTrailingZeros [
                 [ vm 10 /i 10 * vm = ] [
                     lastRemovedDigit zero? vrIsTrailingZeros and vrIsTrailingZeros!
@@ -197,9 +162,6 @@ PRIVATE>
                     removed 1 + removed!
                 ] while
             ] when
-
-            debug? [ vr lastRemovedDigit "%d %d\n" printf ] when
-
             vrIsTrailingZeros lastRemovedDigit 5 = and vr even? and [
                 4 lastRemovedDigit!
             ] when
@@ -215,20 +177,9 @@ PRIVATE>
                 vm 10 /i vm!
                 removed 1 + removed!
             ] while
-
-            debug? [ vr lastRemovedDigit "%d %d\n" printf ] when
-
             vr vm = lastRemovedDigit 5 >= or 1 0 ? vr + output!
         ] if
         vplength removed - :> olength
-
-        debug? [
-            vp vr vm "V+=%d\nV =%d\nV-=%d\n" printf
-            output "O=%d\n" printf
-            olength "OLEN=%d\n" printf
-            exp "EXP=%d\n" printf
-        ] when
-
         25 <vector> output 0 0 :> ( result output2! index! i! )
         sign [ CHAR: - 0 result set-nth 1 index! ] when
         [ output2 10000 >= ] [
@@ -284,9 +235,7 @@ PRIVATE>
                 CHAR: 0 exp + index result set-nth
             ] if
         ] if
-
         result >string
     ] if* ;
 
-: d2s ( value -- string )
-    f print-float ;
+ALIAS: d2s print-float
