@@ -94,7 +94,7 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
         ] if-zero
     ] if
 
-    debug? [ sign "-" "+" ? e2 2 + m2 "S=%s E=%x M=%x\n" printf ] when
+    debug? [ sign "-" "+" ? e2 2 + m2 "S=%s E=0x%x M=0x%x\n" printf ] when
     [ e2 m2 dup even? ieeeExponent 1 <= sign ] dip ;
 
 : bool>str ( ? -- string )
