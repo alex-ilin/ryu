@@ -195,8 +195,8 @@ PRIVATE>
             ] if
         ] if
         vp decimal-length :> vplength
-        e10 vplength + 1 - :> exp!
-        0 0 0 :> ( removed! lastRemovedDigit! output! )
+        e10 vplength + 1 - sign
+        0 0 :> ( removed! lastRemovedDigit! )
         vmIsTrailingZeros vrIsTrailingZeros or [
             ! rare
             [ vp 10 /i vm 10 /i > ] [
@@ -224,7 +224,7 @@ PRIVATE>
                 4 lastRemovedDigit!
             ] when
             acceptBounds vmIsTrailingZeros and not vr vm = and
-            lastRemovedDigit 5 >= or 1 0 ? vr + output!
+            lastRemovedDigit 5 >= or 1 0 ? vr +
         ] [
             ! common
             [ vp 10 /i vm 10 /i > ] [
@@ -235,9 +235,9 @@ PRIVATE>
                 vm 10 /i vm!
                 removed 1 + removed!
             ] while
-            vr vm = lastRemovedDigit 5 >= or 1 0 ? vr + output!
+            vr vm = lastRemovedDigit 5 >= or 1 0 ? vr +
         ] if
-        exp sign output vplength removed - produce-output
+        vplength removed - produce-output
     ] if* ;
 
 ALIAS: d2s print-float
