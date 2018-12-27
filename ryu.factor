@@ -254,7 +254,7 @@ PRIVATE>
             i 4 + i!
         ] while
         output2 100 >= [
-            output2 output2 100 /i 100 * - :> c
+            output2 output2 100 /i 100 * - 2 * :> c
             output2 100 /i output2!
             index olength + i - :> res-index
             c DIGIT_TABLE nth res-index 1 - result set-nth
