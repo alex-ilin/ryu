@@ -293,3 +293,6 @@ PRIVATE>
 
         result >string
     ] if* ;
+
+: d2s ( value -- string )
+    f print-float ;
