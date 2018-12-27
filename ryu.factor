@@ -92,6 +92,64 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
     ] if
     [ e2 m2 dup even? ieeeExponent 1 <= sign ] dip ;
 
+:: produce-output ( exp! sign output olength -- string )
+    25 <vector> output 0 0 :> ( result output2! index! i! )
+    sign [ CHAR: - 0 result set-nth 1 index! ] when
+    [ output2 10000 >= ] [
+        output2 output2 10000 /i 10000 * - :> c
+        output2 10000 /i output2!
+        index olength + i - 1 - :> res-index
+        c 100 rem 2 *
+        dup DIGIT_TABLE nth res-index result set-nth
+        1 + DIGIT_TABLE nth res-index 1 + result set-nth
+        c 100 /i 2 *
+        dup DIGIT_TABLE nth res-index 2 - result set-nth
+        1 + DIGIT_TABLE nth res-index 1 - result set-nth
+        i 4 + i!
+    ] while
+    output2 100 >= [
+        output2 output2 100 /i 100 * - 2 * :> c
+        output2 100 /i output2!
+        index olength + i - :> res-index
+        c DIGIT_TABLE nth res-index 1 - result set-nth
+        c 1 + DIGIT_TABLE nth res-index result set-nth
+        i 2 + i!
+    ] when
+    output2 10 >= [
+        output2 2 * :> c
+        index olength + i - :> res-index
+        c 1 + DIGIT_TABLE nth res-index result set-nth
+        c DIGIT_TABLE nth index result set-nth
+    ] [ CHAR: 0 output2 + index result set-nth ] if
+    index 1 + index!
+    olength 1 > [
+        CHAR: . index result set-nth
+        index olength + index!
+    ] when
+    CHAR: e index result set-nth
+    index 1 + index!
+    exp neg? [
+        CHAR: - index result set-nth
+        index 1 + index!
+        exp neg exp!
+    ] when
+    exp 100 >= [
+        CHAR: 0 exp 100 /i + index result set-nth
+        index 1 + index!
+        exp exp 100 /i 100 * - exp!
+        exp 2 * DIGIT_TABLE nth index result set-nth
+        exp 2 * 1 + DIGIT_TABLE nth index 1 + result set-nth
+        index 2 + index!
+    ] [
+        exp 10 >= [
+            exp 2 * DIGIT_TABLE nth index result set-nth
+            exp 2 * 1 + DIGIT_TABLE nth index 1 + result set-nth
+        ] [
+            CHAR: 0 exp + index result set-nth
+        ] if
+    ] if
+    result >string ;
+
 PRIVATE>
 
 :: print-float ( value -- string )
@@ -179,63 +237,7 @@ PRIVATE>
             ] while
             vr vm = lastRemovedDigit 5 >= or 1 0 ? vr + output!
         ] if
-        vplength removed - :> olength
-        25 <vector> output 0 0 :> ( result output2! index! i! )
-        sign [ CHAR: - 0 result set-nth 1 index! ] when
-        [ output2 10000 >= ] [
-            output2 output2 10000 /i 10000 * - :> c
-            output2 10000 /i output2!
-            index olength + i - 1 - :> res-index
-            c 100 rem 2 *
-            dup DIGIT_TABLE nth res-index result set-nth
-            1 + DIGIT_TABLE nth res-index 1 + result set-nth
-            c 100 /i 2 *
-            dup DIGIT_TABLE nth res-index 2 - result set-nth
-            1 + DIGIT_TABLE nth res-index 1 - result set-nth
-            i 4 + i!
-        ] while
-        output2 100 >= [
-            output2 output2 100 /i 100 * - 2 * :> c
-            output2 100 /i output2!
-            index olength + i - :> res-index
-            c DIGIT_TABLE nth res-index 1 - result set-nth
-            c 1 + DIGIT_TABLE nth res-index result set-nth
-            i 2 + i!
-        ] when
-        output2 10 >= [
-            output2 2 * :> c
-            index olength + i - :> res-index
-            c 1 + DIGIT_TABLE nth res-index result set-nth
-            c DIGIT_TABLE nth index result set-nth
-        ] [ CHAR: 0 output2 + index result set-nth ] if
-        index 1 + index!
-        olength 1 > [
-            CHAR: . index result set-nth
-            index olength + index!
-        ] when
-        CHAR: e index result set-nth
-        index 1 + index!
-        exp neg? [
-            CHAR: - index result set-nth
-            index 1 + index!
-            exp neg exp!
-        ] when
-        exp 100 >= [
-            CHAR: 0 exp 100 /i + index result set-nth
-            index 1 + index!
-            exp exp 100 /i 100 * - exp!
-            exp 2 * DIGIT_TABLE nth index result set-nth
-            exp 2 * 1 + DIGIT_TABLE nth index 1 + result set-nth
-            index 2 + index!
-        ] [
-            exp 10 >= [
-                exp 2 * DIGIT_TABLE nth index result set-nth
-                exp 2 * 1 + DIGIT_TABLE nth index 1 + result set-nth
-            ] [
-                CHAR: 0 exp + index result set-nth
-            ] if
-        ] if
-        result >string
+        exp sign output vplength removed - produce-output
     ] if* ;
 
 ALIAS: d2s print-float
