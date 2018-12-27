@@ -1,10 +1,7 @@
 ! Copyright (C) 2018 Alexander Ilin.
 ! See http://factorcode.org/license.txt for BSD license.
-USING: ryu math tools.test ;
+USING: kernel ryu math math.bitwise tools.test ;
 IN: ryu.tests
-
-! static double ieeeParts2Double(const bool sign, const uint32_t ieeeexponent, const uint64_t ieeeMantissa
-! return int64Bits2Double(((uint64_t)sign << 63) | ((uint64_t)ieeeexponent << 52) | ieeeMantissa);
 
 ! Basic
 { "0e0" } [ 0.0 d2s ] unit-test
@@ -72,14 +69,18 @@ IN: ryu.tests
 
 ! Test min, max shift values in shiftright128
 ! MinMaxShift
-! CONSTANT: maxMantissa 9007199254740991 ! (1 << 53) - 1;
 
-! { "1.7800590868057611e-307" } [ ieeeParts2Double(false, 4, 0) d2s ] unit-test
-! { "2.8480945388892175e-306" } [ ieeeParts2Double(false, 6, maxMantissa) d2s ] unit-test
-! { "2.446494580089078e-296" } [ ieeeParts2Double(false, 41, 0) d2s ] unit-test
-! { "4.8929891601781557e-296" } [ ieeeParts2Double(false, 40, maxMantissa) d2s ] unit-test
-! { "1.8014398509481984e16" } [ ieeeParts2Double(false, 1077, 0) d2s ] unit-test
-! { "3.6028797018963964e16" } [ ieeeParts2Double(false, 1076, maxMantissa) d2s ] unit-test
-! { "2.900835519859558e-216" } [ ieeeParts2Double(false, 307, 0) d2s ] unit-test
-! { "5.801671039719115e-216" } [ ieeeParts2Double(false, 306, maxMantissa) d2s ] unit-test
-! { "3.196104012172126e-27" } [ ieeeParts2Double(false, 934, 0x000FA7161A4D6e0Cu) d2s ] unit-test
+: make-double ( mantissa exponent neg? -- float )
+    [ 11 set-bit ] when 52 shift bitor bits>double ;
+
+CONSTANT: maxMantissa 9007199254740991 ! (1 << 53) - 1;
+
+{ "1.7800590868057611e-307" } [ 0 4 f make-double d2s ] unit-test
+{ "2.8480945388892175e-306" } [ maxMantissa 6 f make-double d2s ] unit-test
+{ "2.446494580089078e-296" } [ 0 41 f make-double d2s ] unit-test
+{ "4.8929891601781557e-296" } [ maxMantissa 40 f make-double d2s ] unit-test
+{ "1.8014398509481984e16" } [ 0 1077 f make-double d2s ] unit-test
+{ "3.6028797018963964e16" } [ maxMantissa 1076 f make-double d2s ] unit-test
+{ "2.900835519859558e-216" } [ 0 307 f make-double d2s ] unit-test
+{ "5.801671039719115e-216" } [ maxMantissa 306 f make-double d2s ] unit-test
+{ "3.196104012172126e-27" } [ 0x000FA7161A4D6e0C 934 f make-double d2s ] unit-test

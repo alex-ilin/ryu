@@ -114,7 +114,7 @@ PRIVATE>
                     acceptBounds [
                         q mv mmShift - 1 - multiple-of-power-of-5 vmIsTrailingZeros!
                     ] [
-                        q vp mv 2 + multiple-of-power-of-5 - vp!
+                        vp q mv 2 + multiple-of-power-of-5 1 0 ? - vp!
                     ] if
                 ] if
             ] when
