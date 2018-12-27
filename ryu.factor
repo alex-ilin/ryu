@@ -267,7 +267,10 @@ PRIVATE>
             c 1 + DIGIT_TABLE nth res-index result set-nth
             c DIGIT_TABLE nth index result set-nth
         ] [ CHAR: 0 output2 + index result set-nth ] if
-        olength 1 > [ CHAR: . index 1 + result set-nth ] [ index 1 + index! ] if
+        olength 1 > [
+            CHAR: . index 1 + result set-nth
+            index olength + 1 + index!
+        ] [ index 1 + index! ] if
         CHAR: e index result set-nth
         index 1 + index!
         exp neg? [
