@@ -74,12 +74,12 @@ IN: ryu.tests
 ! MinMaxShift
 ! CONSTANT: maxMantissa 9007199254740991 ! (1 << 53) - 1;
 
-! { "1.7800590868057611e-307" } [ d2sieeeParts2Double(false, 4, 0) ] unit-test
-! { "2.8480945388892175e-306" } [ d2sieeeParts2Double(false, 6, maxMantissa) ] unit-test
-! { "2.446494580089078e-296" } [ d2sieeeParts2Double(false, 41, 0) ] unit-test
-! { "4.8929891601781557e-296" } [ d2sieeeParts2Double(false, 40, maxMantissa) ] unit-test
-! { "1.8014398509481984e16" } [ d2sieeeParts2Double(false, 1077, 0) ] unit-test
-! { "3.6028797018963964e16" } [ d2sieeeParts2Double(false, 1076, maxMantissa) ] unit-test
-! { "2.900835519859558e-216" } [ d2sieeeParts2Double(false, 307, 0) ] unit-test
-! { "5.801671039719115e-216" } [ d2sieeeParts2Double(false, 306, maxMantissa) ] unit-test
-! { "3.196104012172126e-27" } [ d2sieeeParts2Double(false, 934, 0x000FA7161A4D6e0Cu) ] unit-test
+! { "1.7800590868057611e-307" } [ ieeeParts2Double(false, 4, 0) d2s ] unit-test
+! { "2.8480945388892175e-306" } [ ieeeParts2Double(false, 6, maxMantissa) d2s ] unit-test
+! { "2.446494580089078e-296" } [ ieeeParts2Double(false, 41, 0) d2s ] unit-test
+! { "4.8929891601781557e-296" } [ ieeeParts2Double(false, 40, maxMantissa) d2s ] unit-test
+! { "1.8014398509481984e16" } [ ieeeParts2Double(false, 1077, 0) d2s ] unit-test
+! { "3.6028797018963964e16" } [ ieeeParts2Double(false, 1076, maxMantissa) d2s ] unit-test
+! { "2.900835519859558e-216" } [ ieeeParts2Double(false, 307, 0) d2s ] unit-test
+! { "5.801671039719115e-216" } [ ieeeParts2Double(false, 306, maxMantissa) d2s ] unit-test
+! { "3.196104012172126e-27" } [ ieeeParts2Double(false, 934, 0x000FA7161A4D6e0Cu) d2s ] unit-test
