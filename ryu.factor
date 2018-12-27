@@ -120,8 +120,7 @@ PRIVATE>
             q e10!
             q double-pow-5-bits DOUBLE_POW5_INV_BITCOUNT * 1 - :> k
             q k + e2 - :> i
-            mmShift m2 q DOUBLE_POW5_INV_SPLIT nth i mul-shift-all
-            :> ( vm! vp! vr! )
+            mmShift m2 q DOUBLE_POW5_INV_SPLIT nth i mul-shift-all vr! vp! vm!
 
             debug? [
                 mv e2 q "%d * 2^%d / 10^%d\n" printf
@@ -145,8 +144,7 @@ PRIVATE>
             e2 neg q - :> i
             i double-pow-5-bits DOUBLE_POW5_BITCOUNT - :> k
             q k - :> j
-            mmShift m2 i DOUBLE_POW5_SPLIT nth j mul-shift-all
-            :> ( vm! vp! vr! )
+            mmShift m2 i DOUBLE_POW5_SPLIT nth j mul-shift-all vr! vp! vm!
 
             debug? [
                 mv e2 neg q "%d * 5^%d / 10^%d\n" printf
