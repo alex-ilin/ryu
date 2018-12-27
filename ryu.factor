@@ -105,7 +105,6 @@ PRIVATE>
     float >float debug? unpack-bits [
         [ 5drop ] dip
     ] [| e2 m2 acceptBounds ieeeExponent<=1 sign |
-        25 <vector> :> result
         m2 4 * :> mv
         mantissaBits 2^ m2 = not ieeeExponent<=1 or 1 0 ? :> mmShift
         f :> vmIsTrailingZeros!
@@ -237,6 +236,7 @@ PRIVATE>
             exp "EXP=%d\n" printf
         ] when
 
+        25 <vector> :> result
         0 :> index!
         sign [ CHAR: - 0 result set-nth 1 index! ] when
         0 :> i!
