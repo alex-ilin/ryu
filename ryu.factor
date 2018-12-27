@@ -8,6 +8,7 @@ IN: ryu
 <PRIVATE
 
 : mul-shift ( x mul shift -- y )
+    3dup [ first2 ] dip "x=%d mul[1]=%d mul[2]=%d shift=%d\n" printf
     [ first2 rot [ * ] keep swapd * -64 shift + ] [ 64 - neg ] bi* shift ;
 
 : mul-shift-all ( mmShift m mul shift -- vm vp vr )
@@ -108,6 +109,8 @@ PRIVATE>
         m2 4 * :> mv
         mantissaBits 2^ m2 = not ieeeExponent<=1 or 1 0 ? :> mmShift
         f f 0 0 0 0 :> ( vmIsTrailingZeros! vrIsTrailingZeros! e10! vr! vp! vm! )
+
+        debug? [ e2 "e2=%d\n" printf ] when
 
         e2 0 >= [
             e2 DOUBLE_LOG10_2_NUMERATOR * DOUBLE_LOG10_2_DENOMINATOR /i 0 max :> q
