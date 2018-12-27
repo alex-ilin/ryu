@@ -115,7 +115,7 @@ PRIVATE>
         e2 0 >= [
             e2 DOUBLE_LOG10_2_NUMERATOR * DOUBLE_LOG10_2_DENOMINATOR /i 0 max :> q
             q e10!
-            q double-pow-5-bits DOUBLE_POW5_INV_BITCOUNT * 1 - :> k
+            q double-pow-5-bits DOUBLE_POW5_INV_BITCOUNT + 1 - :> k
             q k + e2 - :> i
             mmShift m2 q DOUBLE_POW5_INV_SPLIT nth i mul-shift-all vr! vp! vm!
 
