@@ -69,8 +69,8 @@ CONSTANT: mantissaBits 52
 CONSTANT: exponentBits 11
 CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
 
-:: unpack-bits ( f debug? -- e2 m2 acceptBounds ieeeExponent<=1? neg? string/f )
-    f double>bits
+:: unpack-bits ( value debug? -- e2 m2 acceptBounds ieeeExponent<=1? neg? string/f )
+    value double>bits
     debug? [ dup "IN=%b\n" printf ] when
     dup mantissaBits exponentBits + bit? :> sign
     dup mantissaBits bits :> ieeeMantissa
@@ -102,8 +102,8 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
 
 PRIVATE>
 
-:: print-float ( float debug? -- string )
-    float >float debug? unpack-bits [
+:: print-float ( value debug? -- string )
+    value >float debug? unpack-bits [
         [ 5drop ] dip
     ] [| e2 m2 acceptBounds ieeeExponent<=1 sign |
         m2 4 * :> mv
