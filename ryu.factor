@@ -16,7 +16,7 @@ IN: ryu
     [ [ 4 *            ] 2dip mul-shift ] 3tri ;
 
 : multiple-of-5? ( value -- ? )
-    5 rem zero? ;
+    5 rem zero? ; inline
 
 :: pow-5-factor ( x -- y )
     0 :> count!
@@ -31,7 +31,7 @@ IN: ryu
             t finished!
             count result!
         ] if
-    ] while result ;
+    ] while result ; inline
 
 : multiple-of-power-of-5 ( p value -- ? )
     pow-5-factor <= ;
@@ -40,7 +40,7 @@ IN: ryu
     [ 1 ] [
         DOUBLE_LOG2_5_NUMERATOR * DOUBLE_LOG2_5_DENOMINATOR + 1 -
         DOUBLE_LOG2_5_DENOMINATOR /i
-    ] if-zero ;
+    ] if-zero ; inline
 
 : decimal-length ( m -- n )
     {
@@ -62,7 +62,7 @@ IN: ryu
         10000000000000000
         100000000000000000
         1000000000000000000
-    } [ dupd >= ] find-last [ 2 + ] [ drop 1 ] if nip ;
+    } [ dupd >= ] find-last [ 2 + ] [ drop 1 ] if nip ; inline
 
 CONSTANT: mantissaBits 52
 CONSTANT: exponentBits 11
@@ -89,8 +89,7 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
             ieeeMantissa mantissaBits set-bit m2!
             f
         ] if-zero
-    ] if
-    [ e2 m2 dup even? ieeeExponent 1 <= sign ] dip ;
+    ] if [ e2 m2 dup even? ieeeExponent 1 <= sign ] dip ; inline
 
 :: prepare-output ( acceptBounds vmIsTrailingZeros! vrIsTrailingZeros! vp! vr! vm! -- output vplength )
     ! vr is converted into the output
@@ -136,7 +135,7 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
         vr dup vm = [ 1 + ] [
             pick 5 >= [ 1 + ] when
         ] if
-    ] if rot drop swap ;
+    ] if rot drop swap ; inline
 
 :: produce-output ( exp! sign output olength -- string )
     25 <vector> output 0 0 :> ( result output2! index! i! )
@@ -193,8 +192,7 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
         ] [
             CHAR: 0 exp + index result set-nth
         ] if
-    ] if
-    result >string ;
+    ] if result >string ; inline
 
 PRIVATE>
 
