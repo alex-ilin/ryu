@@ -200,8 +200,8 @@ PRIVATE>
         vmIsTrailingZeros vrIsTrailingZeros or [
             ! rare
             [ vp 10 /i vm 10 /i > ] [
-                vm 10 /i 10 * vm = vmIsTrailingZeros and vmIsTrailingZeros!
-                lastRemovedDigit zero? vrIsTrailingZeros and vrIsTrailingZeros!
+                vmIsTrailingZeros [ vm 10 /i 10 * vm = vmIsTrailingZeros! ] when
+                vrIsTrailingZeros [ lastRemovedDigit zero? vrIsTrailingZeros! ] when
                 vr dup 10 /i dup vr! 10 * - lastRemovedDigit!
                 vp 10 /i vp!
                 vm 10 /i vm!
@@ -209,15 +209,17 @@ PRIVATE>
             ] while
             vmIsTrailingZeros [
                 [ vm 10 /i 10 * vm = ] [
-                    lastRemovedDigit zero? vrIsTrailingZeros and vrIsTrailingZeros!
+                    vrIsTrailingZeros [ lastRemovedDigit zero? vrIsTrailingZeros! ] when
                     vr dup 10 /i dup vr! 10 * - lastRemovedDigit!
                     vp 10 /i vp!
                     vm 10 /i vm!
                     vplength 1 - vplength!
                 ] while
             ] when
-            vrIsTrailingZeros lastRemovedDigit 5 = and vr even? and [
-                4 lastRemovedDigit!
+            vrIsTrailingZeros [
+                lastRemovedDigit 5 = [
+                    vr even? [ 4 lastRemovedDigit! ] when
+                ] when
             ] when
             acceptBounds vmIsTrailingZeros and not vr vm = and
             lastRemovedDigit 5 >= or 1 0 ? vr +
