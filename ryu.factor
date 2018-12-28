@@ -143,13 +143,13 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
     pick neg? [
         CHAR: - write-char [ neg ] 2dip
     ] when
-    pick 100 >= [
-        pick 100 /i CHAR: 0 + write-char
+    pick dup 100 >= [
+        100 /i CHAR: 0 + write-char
         [ 100 mod 2 * ] 2dip
         pick DIGIT_TABLE nth write-char
         [ 1 + DIGIT_TABLE nth ] 2dip [ set-nth ] keep
     ] [
-        pick 10 >= [
+        10 >= [
             [ 2 * ] 2dip
             pick DIGIT_TABLE nth write-char
             [ 1 + DIGIT_TABLE nth ] 2dip [ set-nth ] keep
