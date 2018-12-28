@@ -152,7 +152,7 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
     [ output2 10000 >= ] [
         output2 dup 10000 /i dup output2! 10000 * - :> c
         index olength + i - 1 - :> res-index
-        c 100 rem 2 *
+        c 100 mod 2 *
         dup DIGIT_TABLE nth res-index result set-nth
         1 + DIGIT_TABLE nth res-index 1 + result set-nth
         c 100 /i 2 *
@@ -196,7 +196,7 @@ PRIVATE>
             q k + e2 - :> i
             mmShift m2 q DOUBLE_POW5_INV_SPLIT nth i mul-shift-all vr! swap vm! ! vp on stack
             q 21 <= [
-                mv 5 rem zero? [
+                mv 5 divisor? [
                     q mv multiple-of-power-of-5 vrIsTrailingZeros!
                 ] [
                     acceptBounds [
