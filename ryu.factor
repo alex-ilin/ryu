@@ -194,17 +194,15 @@ PRIVATE>
                 ] when
             ] if
         ] if
-        vp decimal-length :> vplength!
-        e10 vplength + 1 - sign
+        vp decimal-length dup :> vplength!
+        e10 + 1 - sign
         0 :> lastRemovedDigit!
         vmIsTrailingZeros vrIsTrailingZeros or [
             ! rare
             [ vp 10 /i vm 10 /i > ] [
                 vm 10 /i 10 * vm = vmIsTrailingZeros and vmIsTrailingZeros!
                 lastRemovedDigit zero? vrIsTrailingZeros and vrIsTrailingZeros!
-                vr 10 /i :> nvr
-                vr nvr 10 * - lastRemovedDigit!
-                nvr vr!
+                vr dup 10 /i dup vr! 10 * - lastRemovedDigit!
                 vp 10 /i vp!
                 vm 10 /i vm!
                 vplength 1 - vplength!
@@ -212,9 +210,7 @@ PRIVATE>
             vmIsTrailingZeros [
                 [ vm 10 /i 10 * vm = ] [
                     lastRemovedDigit zero? vrIsTrailingZeros and vrIsTrailingZeros!
-                    vr 10 /i :> nvr
-                    vr nvr 10 * - lastRemovedDigit!
-                    nvr vr!
+                    vr dup 10 /i dup vr! 10 * - lastRemovedDigit!
                     vp 10 /i vp!
                     vm 10 /i vm!
                     vplength 1 - vplength!
@@ -228,9 +224,7 @@ PRIVATE>
         ] [
             ! common
             [ vp 10 /i vm 10 /i > ] [
-                vr 10 /i :> nvr
-                vr nvr 10 * - lastRemovedDigit!
-                nvr vr!
+                vr dup 10 /i dup vr! 10 * - lastRemovedDigit!
                 vp 10 /i vp!
                 vm 10 /i vm!
                 vplength 1 - vplength!
