@@ -195,7 +195,7 @@ PRIVATE>
             ] if
         ] if
         vp decimal-length dup :> vplength!
-        e10 + 1 - sign
+        e10 + 1 - sign ! exp and sign for produce-output
         0 :> lastRemovedDigit!
         vmIsTrailingZeros vrIsTrailingZeros or [
             ! rare
