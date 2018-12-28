@@ -92,6 +92,52 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
     ] if
     [ e2 m2 dup even? ieeeExponent 1 <= sign ] dip ;
 
+:: prepare-output ( acceptBounds vmIsTrailingZeros! vrIsTrailingZeros! vp! vr! vm! -- output vplength )
+    vp decimal-length :> vplength!
+    0 :> lastRemovedDigit!
+    vmIsTrailingZeros vrIsTrailingZeros or [
+        ! rare
+        [ vp 10 /i vm 10 /i > ] [
+            vmIsTrailingZeros [ vm 10 /i 10 * vm = vmIsTrailingZeros! ] when
+            vrIsTrailingZeros [ lastRemovedDigit zero? vrIsTrailingZeros! ] when
+            vr dup 10 /i dup vr! 10 * - lastRemovedDigit!
+            vp 10 /i vp!
+            vm 10 /i vm!
+            vplength 1 - vplength!
+        ] while
+        vmIsTrailingZeros [
+            [ vm 10 /i 10 * vm = ] [
+                vrIsTrailingZeros [ lastRemovedDigit zero? vrIsTrailingZeros! ] when
+                vr dup 10 /i dup vr! 10 * - lastRemovedDigit!
+                vp 10 /i vp!
+                vm 10 /i vm!
+                vplength 1 - vplength!
+            ] while
+        ] when
+        vrIsTrailingZeros [
+            lastRemovedDigit 5 = [
+                vr even? [ 4 lastRemovedDigit! ] when
+            ] when
+        ] when
+        vr lastRemovedDigit 5 >= [ 1 + ] [
+            dup vm = [
+                acceptBounds vmIsTrailingZeros and not [ 1 + ] when
+            ] when
+        ] if
+    ] [
+        ! common
+        [ vp 10 /i vm 10 /i > ] [
+            vr dup 10 /i dup vr! 10 * - lastRemovedDigit!
+            vp 10 /i vp!
+            vm 10 /i vm!
+            vplength 1 - vplength!
+        ] while
+        vr dup vm = [ 1 + ] [
+            lastRemovedDigit 5 >= [ 1 + ] when
+        ] if
+    ] if
+    vplength ;
+
 :: produce-output ( exp! sign output olength -- string )
     25 <vector> output 0 0 :> ( result output2! index! i! )
     sign [ CHAR: - 0 result set-nth 1 index! ] when
@@ -194,51 +240,9 @@ PRIVATE>
                 ] when
             ] if
         ] if
-        vp decimal-length dup :> vplength!
-        e10 + 1 - sign ! exp and sign for produce-output
-        0 :> lastRemovedDigit!
-        vmIsTrailingZeros vrIsTrailingZeros or [
-            ! rare
-            [ vp 10 /i vm 10 /i > ] [
-                vmIsTrailingZeros [ vm 10 /i 10 * vm = vmIsTrailingZeros! ] when
-                vrIsTrailingZeros [ lastRemovedDigit zero? vrIsTrailingZeros! ] when
-                vr dup 10 /i dup vr! 10 * - lastRemovedDigit!
-                vp 10 /i vp!
-                vm 10 /i vm!
-                vplength 1 - vplength!
-            ] while
-            vmIsTrailingZeros [
-                [ vm 10 /i 10 * vm = ] [
-                    vrIsTrailingZeros [ lastRemovedDigit zero? vrIsTrailingZeros! ] when
-                    vr dup 10 /i dup vr! 10 * - lastRemovedDigit!
-                    vp 10 /i vp!
-                    vm 10 /i vm!
-                    vplength 1 - vplength!
-                ] while
-            ] when
-            vrIsTrailingZeros [
-                lastRemovedDigit 5 = [
-                    vr even? [ 4 lastRemovedDigit! ] when
-                ] when
-            ] when
-            vr lastRemovedDigit 5 >= [ 1 + ] [
-                dup vm = [
-                    acceptBounds vmIsTrailingZeros and not [ 1 + ] when
-                ] when
-            ] if
-        ] [
-            ! common
-            [ vp 10 /i vm 10 /i > ] [
-                vr dup 10 /i dup vr! 10 * - lastRemovedDigit!
-                vp 10 /i vp!
-                vm 10 /i vm!
-                vplength 1 - vplength!
-            ] while
-            vr dup vm = [ 1 + ] [
-                lastRemovedDigit 5 >= [ 1 + ] when
-            ] if
-        ] if
-        vplength produce-output
+        vp decimal-length e10 + 1 - sign ! exp and sign for produce-output
+        acceptBounds vmIsTrailingZeros vrIsTrailingZeros vp vr vm
+        prepare-output produce-output
     ] if* ;
 
 ALIAS: d2s print-float
