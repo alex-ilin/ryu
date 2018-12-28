@@ -139,8 +139,7 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
     25 <vector> 0 :> ( result i! )
     0 sign [ CHAR: - swap result set-nth 1 ] when :> index!
     [ output2 10000 >= ] [
-        output2 output2 10000 /i 10000 * - :> c
-        output2 10000 /i output2!
+        output2 dup 10000 /i dup output2! 10000 * - :> c
         index olength + i - 1 - :> res-index
         c 100 rem 2 *
         dup DIGIT_TABLE nth res-index result set-nth
@@ -151,8 +150,7 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
         i 4 + i!
     ] while
     output2 100 >= [
-        output2 output2 100 /i 100 * - 2 * :> c
-        output2 100 /i output2!
+        output2 dup 100 /i dup output2! 100 * - 2 * :> c
         index olength + i - :> res-index
         c DIGIT_TABLE nth res-index 1 - result set-nth
         c 1 + DIGIT_TABLE nth res-index result set-nth
