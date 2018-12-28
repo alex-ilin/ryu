@@ -221,8 +221,11 @@ PRIVATE>
                     vr even? [ 4 lastRemovedDigit! ] when
                 ] when
             ] when
-            acceptBounds vmIsTrailingZeros and not vr vm = and
-            lastRemovedDigit 5 >= or 1 0 ? vr +
+            vr lastRemovedDigit 5 >= [ 1 + ] [
+                dup vm = [
+                    acceptBounds vmIsTrailingZeros and not [ 1 + ] when
+                ] when
+            ] if
         ] [
             ! common
             [ vp 10 /i vm 10 /i > ] [
@@ -231,7 +234,9 @@ PRIVATE>
                 vm 10 /i vm!
                 vplength 1 - vplength!
             ] while
-            vr vm = lastRemovedDigit 5 >= or 1 0 ? vr +
+            vr dup vm = [ 1 + ] [
+                lastRemovedDigit 5 >= [ 1 + ] when
+            ] if
         ] if
         vplength produce-output
     ] if* ;
