@@ -135,9 +135,9 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
         ] if
     ] if rot drop swap ; inline
 
-:: produce-output ( exp! sign output olength -- string )
-    25 <vector> output 0 0 :> ( result output2! index! i! )
-    sign [ CHAR: - 0 result set-nth 1 index! ] when
+:: produce-output ( exp! sign output2! olength -- string )
+    25 <vector> 0 :> ( result i! )
+    0 sign [ CHAR: - swap result set-nth 1 ] when :> index!
     [ output2 10000 >= ] [
         output2 output2 10000 /i 10000 * - :> c
         output2 10000 /i output2!
