@@ -1,7 +1,7 @@
 ! Copyright (C) 2018 Alexander Ilin.
 ! See http://factorcode.org/license.txt for BSD license.
-USING: formatting kernel locals math math.bitwise math.order
-ryu.data sequences strings vectors ;
+USING: formatting kernel locals math math.bitwise math.functions
+math.order ryu.data sequences strings vectors ;
 
 IN: ryu
 
@@ -99,7 +99,7 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
         ! rare
         [ vp 10 /i vm 10 /i 2dup > ] [
             vm! vp!
-            vmIsTrailingZeros [ vm 10 /i 10 * vm = vmIsTrailingZeros! ] when
+            vmIsTrailingZeros [ vm 10 divisor? vmIsTrailingZeros! ] when
             vrIsTrailingZeros [ over zero? vrIsTrailingZeros! ] when
             vr dup 10 /i dup vr! 10 * - -rot nip ! lastRemovedDigit!
             1 - ! vplength!
