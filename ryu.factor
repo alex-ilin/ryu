@@ -94,33 +94,33 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
 
 :: prepare-output ( acceptBounds vmIsTrailingZeros! vrIsTrailingZeros! vp! vr! vm! -- output vplength )
     ! vr is converted into the output
-    vp decimal-length :> vplength!
-    0 ! the if has this stack-effect: ( lastRemovedDigit -- lastRemovedDigit output )
+    0 vp decimal-length
+    ! the if has this stack-effect: ( lastRemovedDigit vplength -- lastRemovedDigit vplength output )
     vmIsTrailingZeros vrIsTrailingZeros or [
         ! rare
         [ vp 10 /i vm 10 /i > ] [
             vmIsTrailingZeros [ vm 10 /i 10 * vm = vmIsTrailingZeros! ] when
-            vrIsTrailingZeros [ dup zero? vrIsTrailingZeros! ] when
-            vr dup 10 /i dup vr! 10 * - swap drop ! lastRemovedDigit!
+            vrIsTrailingZeros [ over zero? vrIsTrailingZeros! ] when
+            vr dup 10 /i dup vr! 10 * - -rot nip ! lastRemovedDigit!
             vp 10 /i vp!
             vm 10 /i vm!
-            vplength 1 - vplength!
+            1 - ! vplength!
         ] while
         vmIsTrailingZeros [
             [ vm 10 /i 10 * vm = ] [
-                vrIsTrailingZeros [ dup zero? vrIsTrailingZeros! ] when
-                vr dup 10 /i dup vr! 10 * - swap drop ! lastRemovedDigit!
+                vrIsTrailingZeros [ over zero? vrIsTrailingZeros! ] when
+                vr dup 10 /i dup vr! 10 * - -rot nip ! lastRemovedDigit!
                 vp 10 /i vp!
                 vm 10 /i vm!
-                vplength 1 - vplength!
+                1 - ! vplength!
             ] while
         ] when
         vrIsTrailingZeros [
-            dup 5 = [
-                vr even? [ drop 4 ] when
+            over 5 = [
+                vr even? [ 4 -rot nip ] when ! 4 lastRemovedDigit!
             ] when
         ] when
-        vr over 5 >= [ 1 + ] [
+        vr pick 5 >= [ 1 + ] [
             dup vm = [
                 acceptBounds vmIsTrailingZeros and not [ 1 + ] when
             ] when
@@ -128,15 +128,15 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
     ] [
         ! common
         [ vp 10 /i vm 10 /i > ] [
-            vr dup 10 /i dup vr! 10 * - swap drop ! lastRemovedDigit!
+            vr dup 10 /i dup vr! 10 * - -rot nip ! lastRemovedDigit!
             vp 10 /i vp!
             vm 10 /i vm!
-            vplength 1 - vplength!
+            1 - ! vplength!
         ] while
         vr dup vm = [ 1 + ] [
-            over 5 >= [ 1 + ] when
+            pick 5 >= [ 1 + ] when
         ] if
-    ] if nip vplength ;
+    ] if rot drop swap ;
 
 :: produce-output ( exp! sign output olength -- string )
     25 <vector> output 0 0 :> ( result output2! index! i! )
