@@ -101,14 +101,14 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
             vm! vp!
             vmIsTrailingZeros [ vm 10 divisor? vmIsTrailingZeros! ] when
             vrIsTrailingZeros [ over zero? vrIsTrailingZeros! ] when
-            vr dup 10 /i dup vr! 10 * - -rot nip ! lastRemovedDigit!
+            vr 10 /mod -roll vr! nip ! lastRemovedDigit!
             1 - ! vplength!
         ] while 2drop
         vmIsTrailingZeros [
             [ vm dup 10 /i dup 10 * swapd = ] [
                 vm!
                 vrIsTrailingZeros [ over zero? vrIsTrailingZeros! ] when
-                vr dup 10 /i dup vr! 10 * - -rot nip ! lastRemovedDigit!
+                vr 10 /mod -roll vr! nip ! lastRemovedDigit!
                 vp 10 /i vp!
                 1 - ! vplength!
             ] while drop ! Drop (vm 10 /i) result from the while condition.
@@ -127,7 +127,7 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
         ! common
         [ vp 10 /i vm 10 /i 2dup > ] [
             vm! vp!
-            vr dup 10 /i dup vr! 10 * - -rot nip ! lastRemovedDigit!
+            vr 10 /mod -roll vr! nip ! lastRemovedDigit!
             1 - ! vplength!
         ] while 2drop
         vr dup vm = [ 1 + ] [
