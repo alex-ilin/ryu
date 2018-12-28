@@ -91,7 +91,7 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
         ] if-zero
     ] if [ e2 m2 dup even? ieeeExponent 1 <= sign ] dip ; inline
 
-:: prepare-output ( vplength acceptBounds vmIsTrailingZeros! vrIsTrailingZeros! vp! vr! vm! -- output vplength' )
+:: prepare-output ( vp! vplength acceptBounds vmIsTrailingZeros! vrIsTrailingZeros! vr! vm! -- output vplength' )
     ! vr is converted into the output
     0 vplength
     ! the if has this stack-effect: ( lastRemovedDigit vplength -- lastRemovedDigit' vplength' output )
@@ -200,13 +200,14 @@ PRIVATE>
     ] [| e2 m2 acceptBounds ieeeExponent<=1 sign |
         m2 4 * :> mv
         mantissaBits 2^ m2 = not ieeeExponent<=1 or 1 0 ? :> mmShift
-        f f 0 0 0 0 :> ( vmIsTrailingZeros! vrIsTrailingZeros! e10! vr! vp! vm! )
+        f f 0 0 0 :> ( vmIsTrailingZeros! vrIsTrailingZeros! e10! vr! vm! )
+        ! After the following loop vp is left on stack.
         e2 0 >= [
             e2 DOUBLE_LOG10_2_NUMERATOR * DOUBLE_LOG10_2_DENOMINATOR /i 0 max :> q
             q e10!
             q double-pow-5-bits DOUBLE_POW5_INV_BITCOUNT + 1 - :> k
             q k + e2 - :> i
-            mmShift m2 q DOUBLE_POW5_INV_SPLIT nth i mul-shift-all vr! vp! vm!
+            mmShift m2 q DOUBLE_POW5_INV_SPLIT nth i mul-shift-all vr! swap vm! ! vp on stack
             q 21 <= [
                 mv 5 rem zero? [
                     q mv multiple-of-power-of-5 vrIsTrailingZeros!
@@ -214,7 +215,7 @@ PRIVATE>
                     acceptBounds [
                         q mv mmShift - 1 - multiple-of-power-of-5 vmIsTrailingZeros!
                     ] [
-                        vp q mv 2 + multiple-of-power-of-5 1 0 ? - vp!
+                        q mv 2 + multiple-of-power-of-5 1 0 ? - ! vp!
                     ] if
                 ] if
             ] when
@@ -224,21 +225,21 @@ PRIVATE>
             e2 neg q - :> i
             i double-pow-5-bits DOUBLE_POW5_BITCOUNT - :> k
             q k - :> j
-            mmShift m2 i DOUBLE_POW5_SPLIT nth j mul-shift-all vr! vp! vm!
+            mmShift m2 i DOUBLE_POW5_SPLIT nth j mul-shift-all vr! swap vm! ! vp on stack
             q 1 <= [
                 mv 1 bitand bitnot q >= vrIsTrailingZeros!
                 acceptBounds [
                     mv 1 - mmShift - bitnot 1 bitand q >= vmIsTrailingZeros!
-                ] [ vp 1 - vp! ] if
+                ] [ 1 - ] if ! vp!
             ] [
                 q 63 < [
                     q 1 - 2^ 1 - mv bitand zero? vrIsTrailingZeros!
                 ] when
             ] if
         ] if
-        vp decimal-length
-        dup e10 + 1 - sign ! exp and sign for produce-output
-        rot acceptBounds vmIsTrailingZeros vrIsTrailingZeros vp vr vm
+        dup decimal-length ! vp vplength
+        dup e10 + 1 - sign -roll -roll ! exp and sign for produce-output
+        acceptBounds vmIsTrailingZeros vrIsTrailingZeros vr vm
         prepare-output produce-output
     ] if* ;
 
