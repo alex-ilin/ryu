@@ -135,21 +135,23 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
         ] if
     ] if rot drop swap ; inline
 
+: write-char ( index seq char -- index+1 seq' )
+    -rot [ tuck ] dip [ set-nth 1 + ] keep ; inline
+
 : write-exp ( exp index result -- result' )
-    2dup CHAR: e -rot set-nth [ 1 + ] dip
+    CHAR: e write-char
     pick neg? [
-        ! Print "-" at index, increment index and negate exp.
-        [ CHAR: - over ] dip [ set-nth 1 + [ neg ] dip ] keep
+        CHAR: - write-char [ neg ] 2dip
     ] when
     pick 100 >= [
-        [ CHAR: 0 pick 100 /i + over ] dip [ set-nth 1 + ] keep
+        pick 100 /i CHAR: 0 + write-char
         [ 100 mod 2 * ] 2dip
-        [ over DIGIT_TABLE nth over ] dip [ set-nth 1 + ] keep
+        pick DIGIT_TABLE nth write-char
         [ 1 + DIGIT_TABLE nth ] 2dip [ set-nth ] keep
     ] [
         pick 10 >= [
             [ 2 * ] 2dip
-            [ over DIGIT_TABLE nth over ] dip [ set-nth 1 + ] keep
+            pick DIGIT_TABLE nth write-char
             [ 1 + DIGIT_TABLE nth ] 2dip [ set-nth ] keep
         ] [
             [ CHAR: 0 + ] 2dip [ set-nth ] keep
