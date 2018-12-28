@@ -135,7 +135,7 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
         ] if
     ] if rot drop swap ; inline
 
-:: produce-output ( exp! sign output2! olength -- string )
+:: produce-output ( exp sign output2! olength -- string )
     25 <vector> 0 :> ( result i! )
     0 sign [ CHAR: - swap result set-nth 1 ] when :> index!
     [ output2 10000 >= ] [
@@ -169,24 +169,25 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
     ] when
     CHAR: e index result set-nth
     index 1 + index!
-    exp neg? [
+    ! exp value will be used on stack until the last if terminates
+    exp dup neg? [
         CHAR: - index result set-nth
         index 1 + index!
-        exp neg exp!
+        neg
     ] when
-    exp 100 >= [
-        CHAR: 0 exp 100 /i + index result set-nth
+    dup 100 >= [
+        CHAR: 0 over 100 /i + index result set-nth
         index 1 + index!
-        exp exp 100 /i 100 * - exp!
-        exp 2 * DIGIT_TABLE nth index result set-nth
-        exp 2 * 1 + DIGIT_TABLE nth index 1 + result set-nth
+        dup 100 /i 100 * -
+        2 * dup DIGIT_TABLE nth index result set-nth
+        1 + DIGIT_TABLE nth index 1 + result set-nth
         index 2 + index!
     ] [
-        exp 10 >= [
-            exp 2 * DIGIT_TABLE nth index result set-nth
-            exp 2 * 1 + DIGIT_TABLE nth index 1 + result set-nth
+        dup 10 >= [
+            2 * dup DIGIT_TABLE nth index result set-nth
+            1 + DIGIT_TABLE nth index 1 + result set-nth
         ] [
-            CHAR: 0 exp + index result set-nth
+            CHAR: 0 swap + index result set-nth
         ] if
     ] if result >string ; inline
 
