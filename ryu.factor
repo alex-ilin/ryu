@@ -136,6 +136,7 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
     ] if rot drop swap ; inline
 
 : write-exp ( exp index result -- result' )
+    2dup CHAR: e -rot set-nth [ 1 + ] dip
     pick neg? [
         ! Print "-" at index, increment index and negate exp.
         [ CHAR: - over ] dip [ set-nth 1 + [ neg ] dip ] keep
@@ -186,9 +187,7 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
     olength 1 > [
         CHAR: . index result set-nth
         index olength + index!
-    ] when
-    exp index CHAR: e over result [ set-nth 1 + ] keep
-    write-exp >string ; inline
+    ] when exp index result write-exp >string ; inline
 
 PRIVATE>
 
