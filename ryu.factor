@@ -211,7 +211,7 @@ PRIVATE>
             mmShift m2 q DOUBLE_POW5_INV_SPLIT nth i mul-shift-all vr! vp! vm!
             q 21 <= [
                 mv 5 rem zero? [
-                    q mv multiple-of-power-of-5 :> vrIsTrailingZeros!
+                    q mv multiple-of-power-of-5 vrIsTrailingZeros!
                 ] [
                     acceptBounds [
                         q mv mmShift - 1 - multiple-of-power-of-5 vmIsTrailingZeros!
