@@ -94,7 +94,7 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
 :: prepare-output ( vplength acceptBounds vmIsTrailingZeros! vrIsTrailingZeros! vp! vr! vm! -- output vplength' )
     ! vr is converted into the output
     0 vplength
-    ! the if has this stack-effect: ( lastRemovedDigit vplength -- lastRemovedDigit vplength output )
+    ! the if has this stack-effect: ( lastRemovedDigit vplength -- lastRemovedDigit' vplength' output )
     vmIsTrailingZeros vrIsTrailingZeros or [
         ! rare
         [ vp 10 /i vm 10 /i > ] [
