@@ -17,15 +17,9 @@ IN: ryu
 
 :: pow-5-factor ( x -- y )
     x :> value!
-    f :> finished!
-    0 [ dup x <= finished not and ] [
-        value 5 /mod zero? [
-            value!
-            1 +
-        ] [
-            finished!
-        ] if
-    ] while ; inline
+    f 0 [ 2dup x <= swap not and ] [
+        value 5 /mod zero? [ value! 1 + ] [ nipd swap ] if
+    ] while nip ; inline
 
 : multiple-of-power-of-5 ( p value -- ? )
     pow-5-factor <= ;
