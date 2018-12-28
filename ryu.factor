@@ -15,20 +15,17 @@ IN: ryu
     [ [ 4 * 2 +        ] 2dip mul-shift ]
     [ [ 4 *            ] 2dip mul-shift ] 3tri ;
 
-: multiple-of-5? ( value -- ? )
-    5 rem zero? ; inline
-
 :: pow-5-factor ( x -- y )
     0 :> count!
     0 :> result!
     x :> value!
     f :> finished!
     [ count x <= finished not and ] [
-        value multiple-of-5? [
-            value 5 /i value!
+        value 5 /mod zero? [
+            value!
             count 1 + count!
         ] [
-            t finished!
+            finished!
             count result!
         ] if
     ] while result ; inline
