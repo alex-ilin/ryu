@@ -91,9 +91,9 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
         ] if-zero
     ] if [ e2 m2 dup even? ieeeExponent 1 <= sign ] dip ; inline
 
-:: prepare-output ( acceptBounds vmIsTrailingZeros! vrIsTrailingZeros! vp! vr! vm! -- output vplength )
+:: prepare-output ( vplength acceptBounds vmIsTrailingZeros! vrIsTrailingZeros! vp! vr! vm! -- output vplength' )
     ! vr is converted into the output
-    0 vp decimal-length
+    0 vplength
     ! the if has this stack-effect: ( lastRemovedDigit vplength -- lastRemovedDigit vplength output )
     vmIsTrailingZeros vrIsTrailingZeros or [
         ! rare
@@ -238,8 +238,9 @@ PRIVATE>
                 ] when
             ] if
         ] if
-        vp decimal-length e10 + 1 - sign ! exp and sign for produce-output
-        acceptBounds vmIsTrailingZeros vrIsTrailingZeros vp vr vm
+        vp decimal-length
+        dup e10 + 1 - sign ! exp and sign for produce-output
+        rot acceptBounds vmIsTrailingZeros vrIsTrailingZeros vp vr vm
         prepare-output produce-output
     ] if* ;
 
