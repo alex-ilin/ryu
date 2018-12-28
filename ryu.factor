@@ -135,6 +135,28 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
         ] if
     ] if rot drop swap ; inline
 
+: write-exp ( index exp result -- result' )
+    [let :> result
+        dup neg? [
+            CHAR: - pick result set-nth
+            [ 1 + ] dip neg
+        ] when
+        dup 100 >= [
+            CHAR: 0 over 100 /i + pick result set-nth
+            [ 1 + ] dip
+            dup 100 /i 100 * -
+            2 * dup DIGIT_TABLE nth pick result set-nth
+            1 + DIGIT_TABLE nth swap 1 + result set-nth
+        ] [
+            dup 10 >= [
+                2 * dup DIGIT_TABLE nth pick result set-nth
+                1 + DIGIT_TABLE nth swap 1 + result set-nth
+            ] [
+                CHAR: 0 + swap result set-nth
+            ] if
+        ] if result
+    ] ; inline
+
 :: produce-output ( exp sign output2! olength -- string )
     25 <vector> 0 :> ( result i! )
     0 sign [ CHAR: - swap result set-nth 1 ] when :> index!
@@ -167,29 +189,8 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
         CHAR: . index result set-nth
         index olength + index!
     ] when
-    CHAR: e index result set-nth
-    index 1 + index!
-    ! exp value will be used on stack until the last if terminates
-    exp dup neg? [
-        CHAR: - index result set-nth
-        index 1 + index!
-        neg
-    ] when
-    dup 100 >= [
-        CHAR: 0 over 100 /i + index result set-nth
-        index 1 + index!
-        dup 100 /i 100 * -
-        2 * dup DIGIT_TABLE nth index result set-nth
-        1 + DIGIT_TABLE nth index 1 + result set-nth
-        index 2 + index!
-    ] [
-        dup 10 >= [
-            2 * dup DIGIT_TABLE nth index result set-nth
-            1 + DIGIT_TABLE nth index 1 + result set-nth
-        ] [
-            CHAR: 0 swap + index result set-nth
-        ] if
-    ] if result >string ; inline
+    CHAR: e index result [ set-nth ] 2keep
+    [ 1 + exp ] dip write-exp >string ; inline
 
 PRIVATE>
 
