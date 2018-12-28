@@ -16,19 +16,16 @@ IN: ryu
     [ [ 4 *            ] 2dip mul-shift ] 3tri ;
 
 :: pow-5-factor ( x -- y )
-    0 :> count!
-    0 :> result!
     x :> value!
     f :> finished!
-    [ count x <= finished not and ] [
+    0 [ dup x <= finished not and ] [
         value 5 /mod zero? [
             value!
-            count 1 + count!
+            1 +
         ] [
             finished!
-            count result!
         ] if
-    ] while result ; inline
+    ] while ; inline
 
 : multiple-of-power-of-5 ( p value -- ? )
     pow-5-factor <= ;
