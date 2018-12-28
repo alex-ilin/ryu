@@ -135,27 +135,25 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
         ] if
     ] if rot drop swap ; inline
 
-: write-exp ( index exp result -- result' )
-    [let :> result
-        dup neg? [
-            CHAR: - pick result set-nth
-            [ 1 + ] dip neg
-        ] when
-        dup 100 >= [
-            CHAR: 0 over 100 /i + pick result set-nth
-            [ 1 + ] dip
-            dup 100 /i 100 * -
-            2 * dup DIGIT_TABLE nth pick result set-nth
-            1 + DIGIT_TABLE nth swap 1 + result set-nth
+: write-exp ( exp index result -- result' )
+    pick neg? [
+        ! Print "-" at index, increment index and negate exp.
+        [ CHAR: - over ] dip [ set-nth 1 + [ neg ] dip ] keep
+    ] when
+    pick 100 >= [
+        [ CHAR: 0 pick 100 /i + over ] dip [ set-nth 1 + ] keep
+        [ 100 mod 2 * ] 2dip
+        [ over DIGIT_TABLE nth over ] dip [ set-nth 1 + ] keep
+        [ 1 + DIGIT_TABLE nth ] 2dip [ set-nth ] keep
+    ] [
+        pick 10 >= [
+            [ 2 * ] 2dip
+            [ over DIGIT_TABLE nth over ] dip [ set-nth 1 + ] keep
+            [ 1 + DIGIT_TABLE nth ] 2dip [ set-nth ] keep
         ] [
-            dup 10 >= [
-                2 * dup DIGIT_TABLE nth pick result set-nth
-                1 + DIGIT_TABLE nth swap 1 + result set-nth
-            ] [
-                CHAR: 0 + swap result set-nth
-            ] if
-        ] if result
-    ] ; inline
+            [ CHAR: 0 + ] 2dip [ set-nth ] keep
+        ] if
+    ] if ; inline
 
 :: produce-output ( exp sign output2! olength -- string )
     25 <vector> 0 :> ( result i! )
@@ -189,8 +187,8 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
         CHAR: . index result set-nth
         index olength + index!
     ] when
-    CHAR: e index result [ set-nth ] 2keep
-    [ 1 + exp ] dip write-exp >string ; inline
+    exp index CHAR: e over result [ set-nth 1 + ] keep
+    write-exp >string ; inline
 
 PRIVATE>
 
