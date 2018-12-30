@@ -1,7 +1,7 @@
 ! Copyright (C) 2018 Alexander Ilin.
 ! See http://factorcode.org/license.txt for BSD license.
 USING: formatting kernel locals math math.bitwise math.functions
-math.order ryu.data sequences strings vectors ;
+math.order ryu.data sequences shuffle strings vectors ;
 
 IN: ryu
 
@@ -79,7 +79,7 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
         ] if-zero
     ] if [ e2 m2 dup even? ieeeExponent 1 <= sign ] dip ; inline
 
-:: prepare-output ( vp! vplength acceptBounds vmIsTrailingZeros! vrIsTrailingZeros! vr! vm! -- output vplength' )
+:: prepare-output ( vp! vplength acceptBounds vmIsTrailingZeros! vrIsTrailingZeros! vr! vm! -- vplength' output )
     ! vr is converted into the output
     0 vplength
     ! the if has this stack-effect: ( lastRemovedDigit vplength -- lastRemovedDigit' vplength' output )
@@ -121,7 +121,7 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
         vr dup vm = [ 1 + ] [
             pick 5 >= [ 1 + ] when
         ] if
-    ] if rot drop swap ; inline
+    ] if nipd ; inline
 
 : write-char ( index seq char -- index+1 seq' )
     -rot [ tuck ] dip [ set-nth 1 + ] keep ; inline
@@ -146,7 +146,7 @@ CONSTANT: offset 1023 ! (1 << (exponentBits - 1)) - 1
         ] if
     ] if ; inline
 
-:: produce-output ( exp sign output2! olength -- string )
+:: produce-output ( exp sign olength output2! -- string )
     25 <vector> 0 :> ( result i! )
     0 sign [ CHAR: - swap result set-nth 1 ] when :> index!
     [ output2 10000 >= ] [
@@ -225,7 +225,7 @@ PRIVATE>
             ] if
         ] if
         dup decimal-length ! vp vplength
-        dup e10 + 1 - sign -roll -roll ! exp and sign for produce-output
+        dup e10 + 1 - sign 2swap ! exp and sign for produce-output
         acceptBounds vmIsTrailingZeros vrIsTrailingZeros vr vm
         prepare-output produce-output
     ] if* ;
