@@ -11,9 +11,10 @@ IN: ryu
     [ first2 rot [ * ] keep swapd * -64 shift + ] [ 64 - neg ] bi* shift ;
 
 : mul-shift-all ( mmShift m mul shift -- vm vp vr )
-    [ [ 4 * 1 - swap - ] 2dip mul-shift ]
-    [ [ 4 * 2 +        ] 2dip mul-shift ]
-    [ [ 4 *            ] 2dip mul-shift ] 3tri ;
+    [ 4 * ] 2dip
+    [ [ 1 - swap - ] 2dip mul-shift ]
+    [ [ 2 +        ] 2dip mul-shift ]
+    [                     mul-shift ] 3tri ;
 
 :: pow-5-factor ( x -- y )
     x :> value!
